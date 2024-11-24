@@ -5,6 +5,9 @@ from django.contrib import messages
 from .forms import RegisterForm
 from .models import Profile, Student, Teacher
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from .models import Course
+import json
 
 # Create your views here.
 
@@ -69,3 +72,33 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+@login_required
+def create_course(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            teacher = Teacher.objects.get(profile__user=request.user)
+            
+            course = Course.objects.create(
+                name=data['courseName'],
+                description=data['courseDescription'],
+                code=data['courseCode'],
+                teacher=teacher
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'course': {
+                    'id': course.id,
+                    'name': course.name,
+                    'description': course.description,
+                    'code': course.code
+                }
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': str(e)
+            })
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})

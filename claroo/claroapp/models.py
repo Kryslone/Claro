@@ -57,3 +57,13 @@ class Teacher(models.Model):
 
     def __str__(self):
         return self.profile.user.email
+    
+class Course(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    code = models.CharField(max_length=50, unique=True)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name

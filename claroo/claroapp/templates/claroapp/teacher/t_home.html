@@ -4,13 +4,10 @@
 Home
 {% endblock %}
 
-{% block content %}
-<h1>Homepage</h1>
+{% block page_name %}
+Home
+{% endblock %}
 
-<!-- Add logout button -->
-<form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
-    <button type="submit">Logout</button>
-</form>
+{% block content %}
 
 {% endblock %}
