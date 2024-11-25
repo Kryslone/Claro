@@ -67,3 +67,11 @@ class Course(models.Model):
 
     def __str__(self):
         return self.name
+    
+class CourseGroup(models.Model):
+    course = models.OneToOneField(Course, on_delete=models.CASCADE)
+    students = models.ManyToManyField(Student, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Group for {self.course.name}"

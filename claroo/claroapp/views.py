@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .forms import RegisterForm
-from .models import Profile, Student, Teacher
+from .models import CourseGroup, Profile, Student, Teacher
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import Course
@@ -73,6 +73,7 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+# views.py
 @login_required
 def create_course(request):
     if request.method == 'POST':
@@ -80,12 +81,16 @@ def create_course(request):
             data = json.loads(request.body)
             teacher = Teacher.objects.get(profile__user=request.user)
             
+            # Create course
             course = Course.objects.create(
                 name=data['courseName'],
-                description=data['courseDescription'],
-                code=data['courseCode'],
+                description=data.get('description', ''),  # Make description optional
+                code=data.get('section', ''),  # Use section as code
                 teacher=teacher
             )
+            
+            # Create associated group
+            course_group = CourseGroup.objects.create(course=course)
             
             return JsonResponse({
                 'success': True,
@@ -93,7 +98,10 @@ def create_course(request):
                     'id': course.id,
                     'name': course.name,
                     'description': course.description,
-                    'code': course.code
+                    'code': course.code,
+                    'section': course.code,
+                    'room': data.get('room', ''),
+                    'groupId': course_group.id
                 }
             })
         except Exception as e:
@@ -102,3 +110,14 @@ def create_course(request):
                 'message': str(e)
             })
     return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+@login_required
+def course_view(request):
+    context = {
+        'full_name': f"{request.user.first_name} {request.user.last_name}",
+        'email': request.user.email
+    }
+    return render(request, 'claroapp/teacher/t_course.html', context)
+
+def teacher_home(request):
+    return render(request, 'claroapp/teacher/t_home.html')
