@@ -43,12 +43,9 @@ INSTALLED_APPS = [
     'claroapp',  # Your app name
 ]
 
-STATICSTORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 AUTH_USER_MODEL = 'claroapp.CustomUser'
 
 MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
